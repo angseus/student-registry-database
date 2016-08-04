@@ -1,0 +1,95 @@
+---- Entities ----
+Department(_abbreviation_, name)
+
+Program(_abbreviation_, name)
+
+Branch(_name_, _program_)
+	program -> Program.name
+
+Student(_id_, name, branch, program)
+	(branch,program) -> (Branch.name, Branch.program)
+
+Course(_code_, name, credit)
+
+Classification(_classifications_)
+
+RestictedCourse(_code_, #attendees)
+	code -> Course.code
+
+---- Relations ----
+isHosting(_department_, _program_)
+	department -> Department.name
+	program -> Program.name
+
+attendsTo(_id_, program, branch)
+	id -> Student.id
+	(program, branch) -> Branch.(program, name)
+
+hasCompleted(_id_, _code_, grade)
+	id -> Student.id
+	code -> Course.code
+
+hasRegistered(_id_, _code_)
+	id -> Student.id
+	code -> Course.code
+
+recommendedCourses(_code_, _program_, _branch_)
+	code -> Course.code
+	(program, branch) -> Branch.(program, name)
+
+branchMandatory(_code_, _program_, _branch_)
+	code -> Course.code
+	(program, branch) -> Branch.(program, name)
+
+programMandatory(_code_, _program_)
+	code -> Course.code
+	program -> Program.abbreviation
+
+belongsTo(_program_, _branch_)
+	program -> Program.abbreviation
+
+isGiven(_code_, _department_)
+	code -> Course.code
+	department -> Department.abbreviation	
+
+hasClassifications(_code_, _classification_)
+	code -> Course.code
+	classification -> Classification.classifications
+
+prerequisites(_code1_, _code2_)								
+	code1 -> Course.code
+	code2 -> Course.code
+
+% code2 is the course code for the prerequisity for the code1 course.
+
+isWaiting(_code_, _id_, time_date)
+	code -> Course.code
+	id -> Student.id
+
+---- Functional Dependencies ----
+
+	Student.id -> Branch.name
+	Student.id -> name
+	Student.id -> Program.abbreviation
+	
+	Branch.name -> Program.abbreviation
+	
+	Program.abbreviation -> Department.abbreviation
+	Program.abbreviation -> Department.name
+	Program.abbreviation -> Program.name
+	Program.name -> Program.abbreviation
+	
+	Department.name -> Department.abbreviation
+	Department.abbreviation -> Department.name
+	
+	Course.code -> name
+	Course.code -> credit
+	Course.code -> Classifications.classification
+	Course.code -> Course.code (prerequisites)
+
+	(student_id, code) -> grade
+	(student_id, course) => time_date
+	(time_date, code) => student_id
+
+	Course.code -> Department.abbreviation - Possible if a course is actually hosted 	by a department
+
